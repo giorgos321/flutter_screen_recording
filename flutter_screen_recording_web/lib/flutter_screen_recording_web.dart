@@ -33,16 +33,27 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
   Future<bool> _record(String name, bool recordVideo, bool recordAudio) async {
     try {
       var audioStream;
-      if(recordAudio){
+
+      if (recordAudio) {
         audioStream = await navigator.getUserMedia({"audio": true});
       }
-      stream = await navigator.getDisplayMedia({"audio": recordAudio, "video": recordVideo});
+      stream = await navigator
+          .getDisplayMedia({"audio": recordAudio, "video": recordVideo});
       this.name = name;
-      if(recordAudio){
+      if (recordAudio) {
         stream.addTrack(audioStream.getAudioTracks()[0]);
       }
 
-      if (MediaRecorder.isTypeSupported('video/mp4;codecs=h265')) {
+      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+        print('video/webm;codecs=vp9');
+        mimeType = 'video/webm;codecs=vp9,opus';
+      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8.0')) {
+        print('video/webm;codecs=vp8.0');
+        mimeType = 'video/webm;codecs=vp8.0,opus';
+      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+        print('video/webm;codecs=vp8');
+        mimeType = 'video/webm;codecs=vp8,opus';
+      } else if (MediaRecorder.isTypeSupported('video/mp4;codecs=h265')) {
         mimeType = 'video/mp4;codecs=h265,opus';
         print("video/mp4;codecs=h265");
       } else if (MediaRecorder.isTypeSupported('video/mp4;codecs=h264')) {
@@ -54,15 +65,6 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
       } else if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
         print("video/webm;codecs=h264");
         mimeType = 'video/webm;codecs=h264,opus';
-      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
-        print('video/webm;codecs=vp9');
-        mimeType = 'video/webm;codecs=vp9,opus';
-      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8.0')) {
-        print('video/webm;codecs=vp8.0');
-        mimeType = 'video/webm;codecs=vp8.0,opus';
-      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
-        print('video/webm;codecs=vp8');
-        mimeType = 'video/webm;codecs=vp8,opus';
       } else {
         mimeType = 'video/webm';
       }
