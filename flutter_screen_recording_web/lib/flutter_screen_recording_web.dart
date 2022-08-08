@@ -71,7 +71,7 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
       this.mediaRecorder = new MediaRecorder(stream, {'mimeType': mimeType});
 
       this.mediaRecorder.addEventListener('dataavailable', (Event event) {
-        print("datavailable ${event.runtimeType}")
+        print("datavailable ${event.runtimeType}");
         recordedChunks = JsObject.fromBrowserObject(event)['data'];
         this.mimeType = mimeType;
         print("blob size: ${recordedChunks?.size ?? 'empty'}");
