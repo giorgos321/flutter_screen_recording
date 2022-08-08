@@ -68,6 +68,7 @@ class FlutterScreenRecordingPlugin(
                 _result.success(true)
                 return true
             } else {
+                ForegroundService.stopService(registrar.context())
                 _result.success(false)
             }
         }
@@ -77,6 +78,7 @@ class FlutterScreenRecordingPlugin(
     override fun  onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "startRecordScreen") {
             try {
+
                 _result = result
                 ForegroundService.startService(registrar.context(), "Your screen is being recorded")
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
@@ -100,6 +102,7 @@ class FlutterScreenRecordingPlugin(
                 calculeResolution(metrics)
                 videoName = call.argument<String?>("name")
                 recordAudio = call.argument<Boolean?>("audio")
+
                 startRecordScreen()
 
             } catch (e: Exception) {
@@ -178,7 +181,6 @@ class FlutterScreenRecordingPlugin(
             mMediaRecorder?.prepare()
             mMediaRecorder?.start()
         } catch (e: IOException) {
-            println("hola")
             Log.d("--INIT-RECORDER", e.message+"")
             println("Error startRecordScreen")
             println(e.message)
