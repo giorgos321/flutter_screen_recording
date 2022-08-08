@@ -37,8 +37,7 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
       if (recordAudio) {
         audioStream = await navigator.getUserMedia({"audio": true});
       }
-      stream = await navigator
-          .getDisplayMedia({"audio": recordAudio, "video": recordVideo});
+      stream = await navigator.getDisplayMedia({"audio": recordAudio, "video": recordVideo});
       this.name = name;
       if (recordAudio) {
         stream.addTrack(audioStream.getAudioTracks()[0]);
@@ -72,10 +71,15 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
       this.mediaRecorder = new MediaRecorder(stream, {'mimeType': mimeType});
 
       this.mediaRecorder.addEventListener('dataavailable', (Event event) {
-        print("datavailable ${event.runtimeType}");
+        print("datavailable ${event.runtimeType}")
         recordedChunks = JsObject.fromBrowserObject(event)['data'];
         this.mimeType = mimeType;
         print("blob size: ${recordedChunks?.size ?? 'empty'}");
+      });
+
+      this.stream.getVideoTracks()[0].addEventListener('ended', (Event event)  {
+         //If user stop sharing screen, stop record
+         stopRecordScreen;
       });
 
       this.mediaRecorder.start();
@@ -91,6 +95,7 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
   Future<String> get stopRecordScreen {
     final c = new Completer<String>();
     this.mediaRecorder.addEventListener("stop", (event) {
+
       mediaRecorder = null;
       this.stream.getTracks().forEach((element) => element.stop());
       this.stream = null;
