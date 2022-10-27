@@ -3,6 +3,7 @@ package com.isvisoft.flutter_screen_recording
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -126,24 +127,32 @@ class FlutterScreenRecordingPlugin(
 
     private fun calculeResolution(metrics: DisplayMetrics) {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            mDisplayHeight = metrics.heightPixels
-            mDisplayWidth = metrics.widthPixels
-        }else{
-            var maxRes = 1280.0;
-            if (metrics.scaledDensity >= 3.0f) {
-                maxRes = 1920.0;
-            }
-            if (metrics.widthPixels > metrics.heightPixels) {
-                val rate = metrics.widthPixels / maxRes
-                mDisplayWidth = maxRes.toInt()
-                mDisplayHeight = (metrics.heightPixels / rate).toInt()
-            } else {
-                val rate = metrics.heightPixels / maxRes
-                mDisplayHeight = maxRes.toInt()
-                mDisplayWidth = (metrics.widthPixels / rate).toInt()
-            }
+        mDisplayHeight = metrics.heightPixels
+        mDisplayWidth = metrics.widthPixels
+
+        var maxRes = 1280.0;
+        if (metrics.scaledDensity >= 3.0f) {
+            maxRes = 1920.0;
         }
+        if (metrics.widthPixels > metrics.heightPixels) {
+            var rate = metrics.widthPixels / maxRes
+
+            if(rate > 1.5){
+                rate = 1.5
+            }
+            mDisplayWidth = maxRes.toInt()
+            mDisplayHeight = (metrics.heightPixels / rate).toInt()
+            println("Rate : $rate")
+        } else {
+            var rate = metrics.heightPixels / maxRes
+            if(rate > 1.5){
+                rate = 1.5
+            }
+            mDisplayHeight = maxRes.toInt()
+            mDisplayWidth = (metrics.widthPixels / rate).toInt()
+            println("Rate : $rate")
+        }
+
         println("Scaled Density")
         println(metrics.scaledDensity)
         println("Original Resolution ")
@@ -178,7 +187,6 @@ class FlutterScreenRecordingPlugin(
             mMediaRecorder?.prepare()
             mMediaRecorder?.start()
         } catch (e: IOException) {
-            println("hola")
             Log.d("--INIT-RECORDER", e.message+"")
             println("Error startRecordScreen")
             println(e.message)
